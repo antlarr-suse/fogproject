@@ -20,6 +20,7 @@
 [[ -z $packageQuery ]] && packageQuery="rpm -q \$x"
 [[ -z $etcconf ]] && etcconf="/etc/apache2/conf.d/fog.conf"
 [[ -z $php_ver ]] && php_ver="7"
+phpfpm="php-fpm"
 [[ -z $packages ]] && packages="apache2 apache2-mod_fcgid apache2-mod_php7 curl dhcp-server gcc gcc-c++ gzip htmldoc lftp m4 make mariadb net-tools nfs-client nfs-kernel-server perl-Crypt-PasswdMD5 php7 php7-fpm php7-gd php7-ldap php7-mbstring php7-mcrypt php7-mysql tar tftp yast2-tftp-server vsftpd wget xinetd"
 [[ -z $packageinstaller ]] && packageinstaller="zypper -n install -y "
 [[ -z $packagelist ]] && packagelist="zypper -n search -x"

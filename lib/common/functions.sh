@@ -1517,7 +1517,7 @@ EOF
     case $systemctl in
         yes)
             case $osid in
-                2)
+                2|4)
                     systemctl stop apache2 $phpfpm >>$workingdir/error_logs/fog_error_${version}.log 2>&1
                     sleep 2
                     systemctl start apache2 $phpfpm >>$workingdir/error_logs/fog_error_${version}.log 2>&1
