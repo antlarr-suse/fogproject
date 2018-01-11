@@ -72,6 +72,7 @@ if [[ -z $webdirdest ]]; then
 fi
 [[ -z $webredirect ]] && webredirect="${webdirdest}/index.php"
 [[ -z $apacheuser ]] && apacheuser="apache"
+[[ -z $apachegroup ]] && apachegroup="$apacheuser"
 [[ -z $apachelogdir ]] && apachelogdir="/var/log/httpd"
 [[ -z $apacheerrlog ]] && apacheerrlog="$apachelogdir/error_log"
 [[ -z $apacheacclog ]] && apacheacclog="$apachelogdir/access_log"

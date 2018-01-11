@@ -1034,7 +1034,7 @@ configureSnapins() {
     mkdir -p $snapindir >>$workingdir/error_logs/fog_error_${version}.log 2>&1
     if [[ -d $snapindir ]]; then
         chmod -R 777 $snapindir
-        chown -R $username:$apacheuser $snapindir
+        chown -R $username:$apachegroup $snapindir
     fi
     errorStat $?
 }
@@ -1445,7 +1445,7 @@ EOF
     openssl x509 -outform der -in $webdirdest/management/other/ca.cert.pem -out $webdirdest/management/other/ca.cert.der >>$workingdir/error_logs/fog_error_${version}.log 2>&1
     errorStat $?
     dots "Resetting SSL Permissions"
-    chown -R $apacheuser:$apacheuser $webdirdest/management/other >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+    chown -R $apacheuser:$apachegroup $webdirdest/management/other >>$workingdir/error_logs/fog_error_${version}.log 2>&1
     errorStat $?
     dots "Setting up SSL FOG Server"
     case $novhost in
@@ -1975,11 +1975,11 @@ class Config
     chmod +rx $apachelogdir
     chmod +rx $apacheerrlog
     chmod +rx $apacheacclog
-    chown -R ${apacheuser}:${apacheuser} $webdirdest
+    chown -R ${apacheuser}:${apachegroup} $webdirdest
     errorStat $?
     [[ -d /var/www/html/ && ! -e /var/www/html/fog/ ]] && ln -s "$webdirdest" /var/www/html/
     [[ -d /var/www/ && ! -e /var/www/fog ]] && ln -s "$webdirdest" /var/www/
-    chown -R ${apacheuser}:${apacheuser} "$webdirdest"
+    chown -R ${apacheuser}:${apachegroup} "$webdirdest"
 }
 downloadfiles() {
     clientVer="$(awk -F\' /"define\('FOG_CLIENT_VERSION'[,](.*)"/'{print $4}' ../packages/web/lib/fog/system.class.php | tr -d '[[:space:]]')"
