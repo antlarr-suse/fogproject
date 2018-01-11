@@ -24,6 +24,9 @@ if [[ $guessdefaults == 1 ]]; then
         *[Aa][Rr][Cc][Hh]*)
             strSuggestedOS=3
             ;;
+        *SUSE*|*SLE*)
+            strSuggestedOS=4
+            ;;
         *)
             strSuggestedOS=1
             ;;

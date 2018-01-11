@@ -34,6 +34,16 @@ case $osid in
             webdirdest="${docroot}/"
         fi
         ;;
+    4)
+        if [[ -z $docroot ]]; then
+            docroot="/srv/www/htdocs/"
+            webdirdest="${docroot}fog/"
+        elif [[ $docroot != *'fog'* ]]; then
+            webdirdest="${docroot}fog/"
+        else
+            webdirdest="${docroot}/"
+        fi
+        ;;
 esac
 [[ ! -d $webdirdest ]] && handleError "    No fog web directory found" 3
 [[ -f ${webdirdest}lib/fog/system.class.php ]] && configpath=${webdirdest}lib/fog/system.class.php || configpath=${webdirdest}lib/fog/System.clss.php

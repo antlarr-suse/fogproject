@@ -451,7 +451,17 @@ configureTFTPandPXE() {
     fi
     case $systemctl in
         yes)
-            if [[ $osid -eq 2 && -f $tftpconfigupstartdefaults ]]; then
+            if [[ $osid -eq 4 ]]; then
+                systemctl disable xinetd >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+                systemctl enable tftp.socket >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+                systemctl stop xinetd >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+                sleep 2
+                systemctl stop tftp.socket >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+                sleep 2
+                systemctl start tftp.socket >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+                sleep 2
+                systemctl status tftp.socket >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+            elif [[ $osid -eq 2 && -f $tftpconfigupstartdefaults ]]; then
                 echo -e "# /etc/default/tftpd-hpa\n# FOG Modified version\nTFTP_USERNAME=\"root\"\nTFTP_DIRECTORY=\"/tftpboot\"\nTFTP_ADDRESS=\":69\"\nTFTP_OPTIONS=\"-s\"" > "$tftpconfigupstartdefaults"
                 systemctl disable xinetd >>$workingdir/error_logs/fog_error_${version}.log 2>&1
                 systemctl enable tftpd-hpa >>$workingdir/error_logs/fog_error_${version}.log 2>&1
@@ -538,7 +548,10 @@ addUbuntuRepo() {
     return $?
 }
 installPackages() {
-    [[ $installlang -eq 1 ]] && packages="$packages gettext"
+    if [[ $installlang -eq 1 ]]; then
+        [[ $osid -eq 4 ]] && gettextpackage="gettext-runtime" || gettextpackage="gettext"
+        packages="$packages $gettextpackage"
+    fi
     packages="$packages unzip"
     dots "Adding needed repository"
     case $osid in
@@ -618,6 +631,11 @@ installPackages() {
                     esac
                     ;;
             esac
+            ;;
+        4)
+            packages="${packages// apache2-mod_fastcgi/}"
+            packages="${packages// apache2-mod_evasive/}"
+            packages="$packages php$php_ver-bcmath bc"
             ;;
     esac
     errorStat $?
@@ -735,6 +753,7 @@ displayOSChoices() {
                 echo "          1) Redhat Based Linux (Redhat, CentOS, Mageia)"
                 echo "          2) Debian Based Linux (Debian, Ubuntu, Kubuntu, Edubuntu)"
                 echo "          3) Arch Linux"
+                echo "          4) openSUSE Leap/openSUSE Tumbleweed/SUSE Linux Enterprise"
                 echo
                 echo -n "  Choice: [$strSuggestedOS] "
                 read osid
@@ -743,7 +762,7 @@ displayOSChoices() {
                         osid=$strSuggestedOS
                         break
                         ;;
-                    1|2|3)
+                    1|2|3|4)
                         break
                         ;;
                     *)
@@ -773,6 +792,12 @@ doOSSpecificIncludes() {
             echo -e "\n\n  Starting Arch Installation\n\n"
             osname="Arch"
             . ../lib/arch/config.sh
+            systemctl="yes"
+            ;;
+        4)
+            echo -e "\n\n  Starting openSUSE/SLE Installation\n\n"
+            osname="SUSE"
+            . ../lib/suse/config.sh
             systemctl="yes"
             ;;
         *)
@@ -1550,6 +1575,9 @@ configureHttpd() {
                     ;;
                 2)
                     systemctl stop apache2 php${php_ver}-fpm >>$workingdir/error_logs/fog_error_${version}.log 2>&1 && sleep 2
+                    ;;
+                4)
+                    systemctl stop apache2 php-fpm >>$workingdir/error_logs/fog_error_${version}.log 2>&1 && sleep 2
                     ;;
             esac
             errorStat $?
