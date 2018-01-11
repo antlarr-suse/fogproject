@@ -1960,7 +1960,11 @@ class Config
             sysv-rc-conf $phpfpm on >>$workingdir/error_logs/fog_error_${version}.log 2>&1
         fi
     elif [[ $systemctl == yes ]]; then
-        systemctl enable httpd php-fpm >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+        if [[ $osid -eq 4 ]]; then
+            systemctl enable apache2 php-fpm >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+        else
+            systemctl enable httpd php-fpm >>$workingdir/error_logs/fog_error_${version}.log 2>&1
+        fi
     else
         chkconfig php-fpm on >>$workingdir/error_logs/fog_error_${version}.log 2>&1
         chkconfig httpd on >>$workingdir/error_logs/fog_error_${version}.log 2>&1
